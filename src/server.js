@@ -29,6 +29,8 @@ const io = new Server(server,{
     // origin: process.env.APP_WEB,
     origins: "*",
   },
+  allowEIO3: true
+
   
 });
 
@@ -151,6 +153,7 @@ io.on("connection", (socket) => {
     "joinWaitingRoom",
     async ({ userId, name, lastName, img, pinGame, rol }) => {
       const game = await Game.findById(pinGame).populate("questions");
+      console.log('Ingreso un usaurio', userId);
 
       if (
         !waitingRoomPlayers[game.owner.toString()] &&
