@@ -15,11 +15,14 @@ var app = express();
 
 const io = new Server({
   cors: {
-    origin: process.env.APP_WEB,
+    // origin: process.env.APP_WEB,
+    origins: "*:*",
+    methods: ["GET", "POST"]
   },
+  
 });
 
-io.listen(process.env.SOCKET_PORT || 10000);
+// io.listen(process.env.SOCKET_PORT || 10000);
 
 app.use(cors());
 
