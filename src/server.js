@@ -15,7 +15,8 @@ var app = express();
 
 const io = new Server({
   cors: {
-    origin: process.env.APP_WEB,
+    // origin: process.env.APP_WEB,
+    origin: "*"
   },
 });
 
