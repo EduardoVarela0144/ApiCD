@@ -20,7 +20,7 @@ const io = new Server({
   },
 });
 
-io.listen(process.env.SOCKET_PORT || 4000);
+// io.listen(process.env.SOCKET_PORT || 4000);
 
 app.use(cors());
 
