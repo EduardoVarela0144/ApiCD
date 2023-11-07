@@ -6,6 +6,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const routesConfig = require("../src/router");
 const { Server } = require("socket.io");
+const http = require("http"); 
 
 const Game = require("../src/api/game/Game");
 
@@ -13,7 +14,17 @@ const ROLES = require("../src/const/const");
 
 var app = express();
 
-const io = new Server({
+const server = http.createServer(app);
+
+// const io = new Server({
+//   cors: {
+//     // origin: process.env.APP_WEB,
+//     origins: "*",
+//   },
+  
+// });
+
+const io = new Server(server,{
   cors: {
     // origin: process.env.APP_WEB,
     origins: "*",
@@ -23,7 +34,7 @@ const io = new Server({
 
 // io.listen(process.env.SOCKET_PORT || 10000);
 
-io.listen(3000);
+
 
 
 app.use(cors());
