@@ -47,14 +47,14 @@ app.use(function (err, req, res, next) {
 
 // Seeders.addRoles();
 
-let currentQuestionIndex = 0;
-let timer;
-let totalTimeRemaining = 0;
-let totalTimeRemainingTOTAL = 0;
-let questions = [];
-let playerResponses = {};
-let correctAnswersCount = 0;
-let waitingRoomPlayers = {};
+// let currentQuestionIndex = 0;
+// let timer;
+// let totalTimeRemaining = 0;
+// let totalTimeRemainingTOTAL = 0;
+// let questions = [];
+// let playerResponses = {};
+// let correctAnswersCount = 0;
+// let waitingRoomPlayers = {};
 
 // io.on("connection", (socket) => {
 //   socket.on("startGame", async (gameId) => {
