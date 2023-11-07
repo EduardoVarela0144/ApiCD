@@ -14,14 +14,14 @@ const ROLES = require("../src/const/const");
 var app = express();
 
 
-const io = new Server({
-  cors: {
-     origin: process.env.APP_WEB,
-  },
+// const io = new Server({
+//   cors: {
+//      origin: process.env.APP_WEB,
+//   },
   
-});
+// });
 
-io.listen(process.env.SOCKET_PORT || 4000);
+// io.listen(process.env.SOCKET_PORT || 4000);
 
 
 app.use(cors());
@@ -56,176 +56,176 @@ let playerResponses = {};
 let correctAnswersCount = 0;
 let waitingRoomPlayers = {};
 
-io.on("connection", (socket) => {
-  socket.on("startGame", async (gameId) => {
-    try {
-      const game = await Game.findById(gameId).populate("questions");
+// io.on("connection", (socket) => {
+//   socket.on("startGame", async (gameId) => {
+//     try {
+//       const game = await Game.findById(gameId).populate("questions");
 
-      if (!game) {
-        throw new Error("No se encontró el juego");
-      }
+//       if (!game) {
+//         throw new Error("No se encontró el juego");
+//       }
 
-      const { questions: gameQuestions } = game;
-      questions = gameQuestions[0].questions;
-      const totalQuestions = questions.length;
+//       const { questions: gameQuestions } = game;
+//       questions = gameQuestions[0].questions;
+//       const totalQuestions = questions.length;
 
-      totalTimeRemaining = 60;
-      totalTimeRemainingTOTAL = totalQuestions * 60;
-      const gameQuestion = questions[currentQuestionIndex];
-      const { question, hint, options } = gameQuestion;
-      const formattedOptions = options.map((option) => ({
-        option: option.option,
-        answer: option.answer,
-      }));
+//       totalTimeRemaining = 60;
+//       totalTimeRemainingTOTAL = totalQuestions * 60;
+//       const gameQuestion = questions[currentQuestionIndex];
+//       const { question, hint, options } = gameQuestion;
+//       const formattedOptions = options.map((option) => ({
+//         option: option.option,
+//         answer: option.answer,
+//       }));
 
-      socket.join(gameId);
+//       socket.join(gameId);
 
-      io.emit("gameStarted", {
-        question: {
-          question,
-          hint,
-          options: formattedOptions,
-        },
-        totalTime: totalTimeRemainingTOTAL,
-        gameId: gameId,
-        total: questions.length,
-        index: currentQuestionIndex,
-      });
+//       io.emit("gameStarted", {
+//         question: {
+//           question,
+//           hint,
+//           options: formattedOptions,
+//         },
+//         totalTime: totalTimeRemainingTOTAL,
+//         gameId: gameId,
+//         total: questions.length,
+//         index: currentQuestionIndex,
+//       });
 
-      startTimer();
-    } catch (error) {
-      console.error(error);
-    }
-  });
+//       startTimer();
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   });
 
-  socket.on("answerQuestion", ({ answer, user, pinGame }) => {
-    const correctAnswer = questions[currentQuestionIndex].options.find(
-      (option) => option.answer === true
-    ).option;
+//   socket.on("answerQuestion", ({ answer, user, pinGame }) => {
+//     const correctAnswer = questions[currentQuestionIndex].options.find(
+//       (option) => option.answer === true
+//     ).option;
 
-    const isCorrect = answer === correctAnswer;
+//     const isCorrect = answer === correctAnswer;
 
-    if (isCorrect) {
-      correctAnswersCount++;
-    }
+//     if (isCorrect) {
+//       correctAnswersCount++;
+//     }
 
-    const playerId = user._id;
-    playerResponses[playerId] = {
-      user,
-      pinGame,
-      correctAnswersCount,
-      total: questions.length,
-    };
+//     const playerId = user._id;
+//     playerResponses[playerId] = {
+//       user,
+//       pinGame,
+//       correctAnswersCount,
+//       total: questions.length,
+//     };
 
-    socket.emit("answerResult", { isCorrect });
-  });
+//     socket.emit("answerResult", { isCorrect });
+//   });
 
-  socket.on("disconnect", () => {});
+//   socket.on("disconnect", () => {});
 
-  socket.on("gameFinished", () => {
-    console.log("bye");
+//   socket.on("gameFinished", () => {
+//     console.log("bye");
 
-    io.emit("gameSummary", {
-      playerResponses,
-      correctAnswersCount,
-    });
+//     io.emit("gameSummary", {
+//       playerResponses,
+//       correctAnswersCount,
+//     });
 
-    playerResponses = {};
-    correctAnswersCount = 0;
-  });
+//     playerResponses = {};
+//     correctAnswersCount = 0;
+//   });
 
-  socket.on(
-    "joinWaitingRoom",
-    async ({ userId, name, lastName, img, pinGame, rol }) => {
-      const game = await Game.findById(pinGame).populate("questions");
-      console.log('Ingreso un usaurio', userId);
+//   socket.on(
+//     "joinWaitingRoom",
+//     async ({ userId, name, lastName, img, pinGame, rol }) => {
+//       const game = await Game.findById(pinGame).populate("questions");
+//       console.log('Ingreso un usaurio', userId);
 
-      if (
-        !waitingRoomPlayers[game.owner.toString()] &&
-        rol.name !== ROLES.Leader
-      ) {
-        io.emit("getOut", { userId: userId });
-      }
+//       if (
+//         !waitingRoomPlayers[game.owner.toString()] &&
+//         rol.name !== ROLES.Leader
+//       ) {
+//         io.emit("getOut", { userId: userId });
+//       }
 
-      if (!waitingRoomPlayers[userId]) {
-        if (rol.name === ROLES.Leader) {
-          waitingRoomPlayers[userId] = {
-            socketId: socket.id,
-            name,
-            lastName,
-            img,
-            pinGame,
-          };
-        } else {
-          if (waitingRoomPlayers[game.owner.toString()]) {
-            waitingRoomPlayers[userId] = {
-              socketId: socket.id,
-              name,
-              lastName,
-              img,
-              pinGame,
-            };
-          }
-        }
-      }
+//       if (!waitingRoomPlayers[userId]) {
+//         if (rol.name === ROLES.Leader) {
+//           waitingRoomPlayers[userId] = {
+//             socketId: socket.id,
+//             name,
+//             lastName,
+//             img,
+//             pinGame,
+//           };
+//         } else {
+//           if (waitingRoomPlayers[game.owner.toString()]) {
+//             waitingRoomPlayers[userId] = {
+//               socketId: socket.id,
+//               name,
+//               lastName,
+//               img,
+//               pinGame,
+//             };
+//           }
+//         }
+//       }
 
-      io.emit("waitingRoomPlayerList", Object.values(waitingRoomPlayers));
-    }
-  );
+//       io.emit("waitingRoomPlayerList", Object.values(waitingRoomPlayers));
+//     }
+//   );
 
-  socket.on("leaveWaitingRoom", ({ userId }) => {
-    if (waitingRoomPlayers[userId]) {
-      delete waitingRoomPlayers[userId];
-    }
+//   socket.on("leaveWaitingRoom", ({ userId }) => {
+//     if (waitingRoomPlayers[userId]) {
+//       delete waitingRoomPlayers[userId];
+//     }
 
-    console.log("me sali");
-    console.log(waitingRoomPlayers);
-    io.emit("waitingRoomPlayerList", Object.values(waitingRoomPlayers));
-  });
-});
+//     console.log("me sali");
+//     console.log(waitingRoomPlayers);
+//     io.emit("waitingRoomPlayerList", Object.values(waitingRoomPlayers));
+//   });
+// });
 
-function startTimer() {
-  if (currentQuestionIndex < questions.length) {
-    io.emit("timeRemaining", { timeRemaining: totalTimeRemaining });
+// function startTimer() {
+//   if (currentQuestionIndex < questions.length) {
+//     io.emit("timeRemaining", { timeRemaining: totalTimeRemaining });
 
-    timer = setInterval(() => {
-      totalTimeRemaining--;
-      io.emit("timeRemaining", { timeRemaining: totalTimeRemaining });
+//     timer = setInterval(() => {
+//       totalTimeRemaining--;
+//       io.emit("timeRemaining", { timeRemaining: totalTimeRemaining });
 
-      if (totalTimeRemaining <= 0) {
-        clearInterval(timer);
-        currentQuestionIndex++;
+//       if (totalTimeRemaining <= 0) {
+//         clearInterval(timer);
+//         currentQuestionIndex++;
 
-        if (currentQuestionIndex < questions.length) {
-          const gameQuestion = questions[currentQuestionIndex];
-          const { question, hint, options } = gameQuestion;
-          const formattedOptions = options.map((option) => ({
-            option: option.option,
-            answer: option.answer,
-          }));
+//         if (currentQuestionIndex < questions.length) {
+//           const gameQuestion = questions[currentQuestionIndex];
+//           const { question, hint, options } = gameQuestion;
+//           const formattedOptions = options.map((option) => ({
+//             option: option.option,
+//             answer: option.answer,
+//           }));
 
-          io.emit("nextQuestion", {
-            question: {
-              question,
-              hint,
-              options: formattedOptions,
-            },
-            timeRemaining: totalTimeRemaining,
-            total: questions.length,
-            index: currentQuestionIndex,
-          });
-          totalTimeRemaining = 60;
-          startTimer();
-        } else {
-          io.emit("gameFinished");
-          io.emit("gameSummary", {
-            playerResponses,
-            correctAnswersCount,
-          });
-        }
-      }
-    }, 1000);
-  }
-}
+//           io.emit("nextQuestion", {
+//             question: {
+//               question,
+//               hint,
+//               options: formattedOptions,
+//             },
+//             timeRemaining: totalTimeRemaining,
+//             total: questions.length,
+//             index: currentQuestionIndex,
+//           });
+//           totalTimeRemaining = 60;
+//           startTimer();
+//         } else {
+//           io.emit("gameFinished");
+//           io.emit("gameSummary", {
+//             playerResponses,
+//             correctAnswersCount,
+//           });
+//         }
+//       }
+//     }, 1000);
+//   }
+// }
 
 module.exports = app;
