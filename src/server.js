@@ -27,7 +27,7 @@ const server = http.createServer(app);
 const io = new Server(server,{
   cors: {
     // origin: process.env.APP_WEB,
-    origins: "*",
+    origin: "*",
   },
   allowEIO3: true
 
